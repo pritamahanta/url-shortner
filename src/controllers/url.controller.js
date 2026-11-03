@@ -88,7 +88,7 @@ export function redirectUrl(req, res) {
             message: "Short URL not found."
         })
     }
-    const orignalUrl = shortCodeToUrl.get(shortCode) ;
+    const originalUrl = shortCodeToUrl.get(shortCode) ;
     return res.redirect(302, originalUrl);
     
    } catch (error) {
