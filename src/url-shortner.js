@@ -1,6 +1,11 @@
 import crypto from "crypto";
 // import {nanoid} from "nanoid" ;
 
+// temporary in-memory map
+
+const shortCodeToUrl = new Map();
+const urlToShortCode = new Map();
+
 export function addUrl(req, res) {
 
     try {
@@ -12,6 +17,7 @@ export function addUrl(req, res) {
             })
         }
 
+        // parsing the url
         try {
             const parsedUrl = new URL(originalUrl);
 
@@ -28,11 +34,23 @@ export function addUrl(req, res) {
         // caching 
         // if(db(url) present) return db[url]
 
+        if (urlToShortCode.has(originalUrl)) {
+
+            const shortCode = urlToShortCode.get(originalUrl);
+            return res.status(409).json({
+                shortCode: shortCode
+            });
+        }
+
         // short the url
         // const shortUrl = shorten(url) ;
 
         // method - 1
-        const shortUrl = crypto.randomBytes(4).toString('hex');
+        let shortCode;
+
+        do {
+            shortCode = crypto.randomBytes(4).toString("hex");
+        } while (shortCodeToUrl.has(shortCode));
 
         // method - 2
         // const shortUrl = nanoid(8) ;
@@ -40,9 +58,12 @@ export function addUrl(req, res) {
         // store in the db
         // db.add(shortUrl) ;
 
+        shortCodeToUrl.set(shortCode, originalUrl);
+        urlToShortCode.set(originalUrl, shortCode);
+
         return res.status(201).json({
             message: "URL processed successfully.",
-            url: shortUrl
+            shortCode: shortCode
         });
 
     }
