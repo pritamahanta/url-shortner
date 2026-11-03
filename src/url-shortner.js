@@ -36,7 +36,7 @@ export function addUrl(req, res) {
 
         return res.status(201).json({
             message: "URL processed successfully.",
-            url: url
+            url: shortUrl
         });
 
     }
