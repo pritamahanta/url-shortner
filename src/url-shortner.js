@@ -4,17 +4,23 @@ import crypto from "crypto";
 export function addUrl(req, res) {
 
     try {
-        const {originalUrl} = req ;
+        const { originalUrl } = req.body ?? {};
 
-        if(!originalUrl) {
-            return res.status(400).json ({
+        if (!originalUrl) {
+            return res.status(400).json({
                 message: "URL not found."
             })
         }
 
         try {
-            new URL(originalUrl) ;
-        } catch(err) {
+            const parsedUrl = new URL(originalUrl);
+
+            if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+                return res.status(400).json({
+                    message: "Only HTTP and HTTPS URLs are supported."
+                });
+            }
+        } catch (err) {
             return res.status(400).json({
                 message: "Invalid URL format. Please provide a valid URL (e.g., https://example.com)."
             });
@@ -26,7 +32,7 @@ export function addUrl(req, res) {
         // const shortUrl = shorten(url) ;
 
         // method - 1
-        const shortUrl = crypto.randomBytes(8).toString('hex') ;
+        const shortUrl = crypto.randomBytes(4).toString('hex');
 
         // method - 2
         // const shortUrl = nanoid(8) ;
@@ -41,12 +47,12 @@ export function addUrl(req, res) {
 
     }
     catch (err) {
-        console.log(err) ;
+        console.log(err);
 
         return res.status(500).json({
             message: "Internal server error.",
             error: err.message
         });
     }
-   
+
 }
