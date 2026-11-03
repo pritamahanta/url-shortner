@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { tracingChannel } from "diagnostics_channel";
 // import {nanoid} from "nanoid" ;
 
 // temporary in-memory map
@@ -37,7 +38,7 @@ export function addUrl(req, res) {
         if (urlToShortCode.has(originalUrl)) {
 
             const shortCode = urlToShortCode.get(originalUrl);
-            return res.status(409).json({
+            return res.status(200).json({
                 shortCode: shortCode
             });
         }
@@ -75,5 +76,26 @@ export function addUrl(req, res) {
             error: err.message
         });
     }
+}
 
+export function redirectUrl(req, res) {
+
+   try {
+    const {shortCode} = req.params;
+
+    if(!shortCodeToUrl.has(shortCode)) {
+        return res.status(404).json({
+            message: "Short URL not found."
+        })
+    }
+    const orignalUrl = shortCodeToUrl.get(shortCode) ;
+    return res.redirect(302, originalUrl);
+    
+   } catch (error) {
+    console.log(error) ;
+
+    return res.status(500).json({
+        message: "Internal server error" 
+    });
+   }
 }

@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
-import { addUrl } from "./src/url-shortner.js";
+import { addUrl } from "./src/controllers/url.controller.js";
 
 const app = express() ;
 const PORT = process.env.PORT || 3000 
