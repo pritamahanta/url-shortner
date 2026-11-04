@@ -1,5 +1,5 @@
 import express from "express";
-import { addUrl, redirectUrl } from "./src/controllers/url.controller.js";
+import { addUrl, redirectUrl } from "./controllers/url.controller.js";
 
 const app = express();
 const router = express.Router();
