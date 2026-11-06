@@ -1,16 +1,17 @@
 import express from "express";
-import { addUrl, redirectUrl } from "./controllers/url.controller.js";
+import urlRoutes from "./routes/url.routes.js";
 
-export const app = express();
-export const router = express.Router();
+const app = express();
 
 app.use(express.json());
 
 app.get("/health", (req, res) => {
     res.status(200).json({
         status: "ok",
-        message: "URL shortner URL is running."
+        message: "URL Shortener is running."
     });
 });
 
-app.use(router);
+app.use(urlRoutes);
+
+export default app;
