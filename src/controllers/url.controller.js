@@ -1,11 +1,9 @@
 import crypto from "crypto";
 import { tracingChannel } from "diagnostics_channel";
+import {getShortCode, getOriginalUrl, saveUrl} from "../store/url.store.js"
 // import {nanoid} from "nanoid" ;
 
 // temporary in-memory map
-
-const shortCodeToUrl = new Map();
-const urlToShortCode = new Map();
 
 export function addUrl(req, res) {
 
@@ -22,6 +20,7 @@ export function addUrl(req, res) {
         try {
             const parsedUrl = new URL(originalUrl);
 
+            // checking the methods also
             if (!["http:", "https:"].includes(parsedUrl.protocol)) {
                 return res.status(400).json({
                     message: "Only HTTP and HTTPS URLs are supported."
@@ -35,9 +34,9 @@ export function addUrl(req, res) {
         // caching 
         // if(db(url) present) return db[url]
 
-        if (urlToShortCode.has(originalUrl)) {
+        let shortCode = getShortCode(originalUrl) ;
 
-            const shortCode = urlToShortCode.get(originalUrl);
+        if (shortCode) {
             return res.status(200).json({
                 shortCode: shortCode
             });
@@ -47,11 +46,10 @@ export function addUrl(req, res) {
         // const shortUrl = shorten(url) ;
 
         // method - 1
-        let shortCode;
 
         do {
             shortCode = crypto.randomBytes(4).toString("hex");
-        } while (shortCodeToUrl.has(shortCode));
+        } while (getShortCode(shortCode));
 
         // method - 2
         // const shortUrl = nanoid(8) ;
@@ -59,8 +57,7 @@ export function addUrl(req, res) {
         // store in the db
         // db.add(shortUrl) ;
 
-        shortCodeToUrl.set(shortCode, originalUrl);
-        urlToShortCode.set(originalUrl, shortCode);
+        saveUrl(shortCode, originalUrl) ;
 
         return res.status(201).json({
             message: "URL processed successfully.",
@@ -83,12 +80,13 @@ export function redirectUrl(req, res) {
    try {
     const {shortCode} = req.params;
 
-    if(!shortCodeToUrl.has(shortCode)) {
+    const originalUrl = getOriginalUrl(shortCode) ;
+
+    if(!originalUrl) {
         return res.status(404).json({
             message: "Short URL not found."
         })
     }
-    const originalUrl = shortCodeToUrl.get(shortCode) ;
     return res.redirect(302, originalUrl);
     
    } catch (error) {
