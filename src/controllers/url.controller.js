@@ -49,7 +49,7 @@ export function addUrl(req, res) {
 
         do {
             shortCode = crypto.randomBytes(4).toString("hex");
-        } while (getShortCode(shortCode));
+        } while (getOriginalUrl(shortCode));
 
         // method - 2
         // const shortUrl = nanoid(8) ;

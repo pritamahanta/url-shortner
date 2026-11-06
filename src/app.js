@@ -1,8 +1,8 @@
 import express from "express";
 import { addUrl, redirectUrl } from "./controllers/url.controller.js";
 
-const app = express();
-const router = express.Router();
+export const app = express();
+export const router = express.Router();
 
 app.use(express.json());
 
@@ -13,9 +13,4 @@ app.get("/health", (req, res) => {
     });
 });
 
-router.post('/url/add', addUrl);
-router.get("/:shortCode", redirectUrl);
-
 app.use(router);
-
-export default app;
